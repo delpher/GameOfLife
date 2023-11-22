@@ -1,39 +1,24 @@
-export const GameOfLife = ({ width, height, generator }) => ({
+export const GameOfLife = (width, height, generator) => ({
     init: () => ({
-        board: {
-            width,
-            height,
-            cells: new Array(height).fill(null).map((_, ri) =>
-                new Array(width).fill(null).map((_, ci) =>
-                    ({ x: ci, y: ri, alive: generator(ci, ri) })
-                )
-            )
-        },
+        cells: new Array(height).fill(null).map((_, y) =>
+            new Array(width).fill(null).map((_, x) => ({ alive: generator(x, y) })))
     }),
-    run: ({ board, board: { cells } }) => ({
-        board: {
-            ...board,
-            cells: cells.map(row =>
-                row.map(cell =>
-                ({
-                    ...cell,
-                    alive: isAlive(cell.alive, countNeighbors(cells, cell.x, cell.y))
-                })
-                )
-            )
-        }
+    run: ({ cells }) => ({
+        cells: cells.map((row, y) => row.map((cell, x) =>
+        ({
+            alive: nextState(cell.alive, countNeighbors(cells, x, y))
+        })))
     })
 });
 
-function isAlive(alive, count) {
+function nextState(alive, count) {
     return (!alive && count == 3) || (alive && (count == 2 || count == 3));
 }
 
-function countNeighbors(cells, cx, cy) {
+function countNeighbors(cells, x, y) {
     return [
         [-1, -1], [0, -1], [+1, -1],
         [-1, 0], [+1, 0], [-1, +1],
         [0, +1], [+1, +1]
-    ].map(([dx, dy]) => cells[cy + dy]?.[cx + dx])
-        .reduce((acc, cell) => acc + (cell?.alive ? 1 : 0), 0);
+    ].reduce((neighbours, [dx, dy]) => neighbours + (cells[y + dy]?.[x + dx]?.alive ? 1 : 0), 0);
 }
