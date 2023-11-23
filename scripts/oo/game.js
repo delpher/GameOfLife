@@ -16,23 +16,24 @@ class Cell {
         const neighbours = this.world.countNeighbours(this);
 
         if (neighbours == 3 && !this.isAlive())
-            this.newState = "new";
-        else if ((neighbours == 2 || neighbours == 3) && this.isAlive())
+            this.newState = 'new';
+        else if ((neighbours == 2 || neighbours == 3) && this.isAlive()) {
             this.age = this.age < 12 ? this.age + 1 : this.age;
+            this.newState = 'alive';
+        }
         else if ((neighbours < 2 || neighbours >= 4) && this.isAlive())
-            this.newState = "dead";
+            this.newState = 'dead';
         else
-            this.newState = "none";
+            this.newState = 'none';
     };
 
     render(ctx, cellSize) {
-        this.state = this.newState;
-        switch (this.state) {
-            case "new": ctx.fillStyle = "lime"; break;
-            case "alive": ctx.fillStyle = 'rgb(0, ' + (255 - this.age * 10) + ', 0)'; break;
-            case "dead": ctx.fillStyle = "rgb(80,80,80)"; break;
-            case "none": ctx.fillStyle = "black"; break;
-        }
+        ctx.fillStyle = ({
+            'new':  'lime',
+            'alive': 'green',
+            'dead': 'gray',
+            'none': 'black'
+        })[this.state = this.newState];
         ctx.fillRect(this.x * cellSize, this.y * cellSize, cellSize, cellSize);
     };
 
@@ -86,8 +87,7 @@ const ctx = document
 
 document.getElementById('canvas').style = 'display:block';
 
-const cellSize = 5;
-const refreshRate = 30;
+const cellSize = 3;
 
 let world = new World(200, 200);
 

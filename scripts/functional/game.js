@@ -7,9 +7,18 @@ let state = game.init();
 window.setInterval(() => { state = game.run(state); render(state); });
 
 function render({ cells }) {
-    const cellSize = 5;
+    const cellSize = 3;
     cells.map((row, y) => row.map((cell, x) => {
-        ctx.fillStyle = cell.alive ? 'lime' : 'black';
+        ctx.fillStyle = stateToFill(cell.state);
         ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
     }));
+}
+
+function stateToFill(state) {
+    switch (state) {
+        case -1: return 'gray';
+        case 0: return 'black';
+        case 1: return 'lime';
+        default: return 'green';
+    }
 }
